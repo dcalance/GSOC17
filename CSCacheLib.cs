@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
+using System.IO;
+using System.Security.Cryptography;
 
-namespace GSOC17
+namespace CSCacheLib
 {
-    class Program
+    public class CSCache
     {
         static bool IsUnix
         {
@@ -19,10 +21,24 @@ namespace GSOC17
             }
         }
         static bool use_dos2unix = true;
-        static void Main(string[] args)
+        public static void CSCache_main(string[] args)
         {
-            Execute("cd");
+            Execute(String.Concat(args));
             Console.ReadKey();
+        }
+        public static void MakeMD5(string filename)
+        {
+        	using (var md5 = MD5.Create())
+        	{
+        		using (var stream = File.OpenRead(filename))
+        		{
+        			byte[] byteArr = md5.ComputeHash(stream);
+        			using (var file = new BinaryWriter(File.OpenWrite("out.txt")))
+        			{
+        				file.Write(byteArr);
+        			}
+        		}
+        	}
         }
         static void Execute(string cmdLine)
         {
