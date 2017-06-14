@@ -7,7 +7,7 @@ namespace CSCache
 	{
 		static void Main(string[] args)
 		{
-			MakeMD5(args[0]);
-		}
+            CSCache_main(args);
+        }
 	}
 }
