@@ -23,6 +23,7 @@ namespace CSCacheLib
         static bool use_dos2unix = true;
         static string compilatorInfo;
         static List<string> compilatorArgs = new List<string>();
+        static List<string> resources = new List<string>();
         static string outputFile;
         static string inputFile;
 
@@ -73,6 +74,10 @@ namespace CSCacheLib
             {
                 if (compParams[i][0] != '-')
                 {
+                	if (compParams[i].Length > 2 && compParams.Substring(0,2) == "-r")
+                	{
+                		
+                	}
                     inputFile = compParams[i];
                 }
                 else
@@ -83,7 +88,8 @@ namespace CSCacheLib
                         outputFile = outputArg[1];
                     }
                     else
-                    if ((compParams[i].Length == 2 && compParams[i].Substring(0, 2) == "-o") || (compParams[i].Length == 8 && compParams[i].Substring(0, 8) == "--output"))
+                    if ((compParams[i].Length == 2 && compParams[i].Substring(0, 2) == "-o") || 
+                    	(compParams[i].Length == 8 && compParams[i].Substring(0, 8) == "--output"))
                     {
                         outputFile = compParams[++i];
                     }
@@ -112,16 +118,16 @@ namespace CSCacheLib
         }
         public static void Execute(string cmdLine)
         {
-            //if(IsUnix)
-            //{
-            //    Console.WriteLine("[execute cmd]: " + cmdLine);
-            //    int ret = system(cmdLine);
-            //    if (ret != 0)
-            //    {
-            //        Error(String.Format("[Fail] {0}", ret));
-            //    }
-            //    return;
-            //}
+            // if(IsUnix)
+            // {
+            //     Console.WriteLine("[execute cmd]: " + cmdLine);
+            //     int ret = system(cmdLine);
+            //     if (ret != 0)
+            //     {
+            //         Error(String.Format("[Fail] {0}", ret));
+            //     }
+            //     return;
+            // }
             if (use_dos2unix == true)
                 try
                 {
@@ -146,7 +152,7 @@ namespace CSCacheLib
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.UseShellExecute = false;
 
-            if (use_dos2unix == false)
+            if (use_dos2unix == false && !IsUnix)
             {
                 psi.FileName = "cmd";
                 psi.Arguments = String.Format("/c \"{0}\"", cmdLine);

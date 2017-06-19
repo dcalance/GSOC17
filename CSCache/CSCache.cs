@@ -8,6 +8,7 @@ namespace CSCache
 		static void Main(string[] args)
 		{
             CSCache_main(args);
+            Execute("ls -la");
         }
 	}
 }
