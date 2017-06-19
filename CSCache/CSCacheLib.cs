@@ -23,7 +23,6 @@ namespace CSCacheLib
         static bool use_dos2unix = true;
         static string compilatorInfo;
         static List<string> compilatorArgs = new List<string>();
-        static List<string> resources = new List<string>();
         static string outputFile;
         static string inputFile;
 
@@ -63,6 +62,13 @@ namespace CSCacheLib
             Console.WriteLine($"input file = {inputFile}");
             Console.WriteLine($"output file = {outputFile}");
             Console.WriteLine($"compilator name = {compilatorInfo}");
+            Console.WriteLine("copilator args:");
+            foreach (var item in compilatorArgs)
+            {
+                Console.Write(item + " ");
+            }
+            Execute("cd");
+            //Console.WriteLine(Execute("cd"));
         }
         static void ProcessInputCompilator(string compilatorWithParams)
         {
@@ -74,10 +80,6 @@ namespace CSCacheLib
             {
                 if (compParams[i][0] != '-')
                 {
-                	if (compParams[i].Length > 2 && compParams.Substring(0,2) == "-r")
-                	{
-                		
-                	}
                     inputFile = compParams[i];
                 }
                 else
@@ -100,7 +102,6 @@ namespace CSCacheLib
                 }
             }
             compilatorArgs.Sort();
-            
         }
         public static void MakeMD5(string filename)
         {
@@ -116,18 +117,9 @@ namespace CSCacheLib
         		}
         	}
         }
-        public static void Execute(string cmdLine)
+        public static string Execute(string cmdLine)
         {
-            // if(IsUnix)
-            // {
-            //     Console.WriteLine("[execute cmd]: " + cmdLine);
-            //     int ret = system(cmdLine);
-            //     if (ret != 0)
-            //     {
-            //         Error(String.Format("[Fail] {0}", ret));
-            //     }
-            //     return;
-            // }
+            string consoleOutput = null;
             if (use_dos2unix == true)
                 try
                 {
@@ -145,12 +137,13 @@ namespace CSCacheLib
                 }
                 catch
                 {
-                    Console.WriteLine("Warning: dos2unix not found");
+                    //Console.WriteLine("Warning: dos2unix not found");
                     use_dos2unix = false;
                 }
 
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.UseShellExecute = false;
+            psi.RedirectStandardOutput = true;
 
             if (use_dos2unix == false && !IsUnix)
             {
@@ -160,27 +153,34 @@ namespace CSCacheLib
             else
             {
                 psi.FileName = "sh";
-                StringBuilder b = new StringBuilder();
-                int count = 0;
-                for (int i = 0; i < cmdLine.Length; i++)
+                if (!IsUnix)
                 {
-                    if (cmdLine[i] == '`')
+                    StringBuilder b = new StringBuilder();
+                    int count = 0;
+                    for (int i = 0; i < cmdLine.Length; i++)
                     {
-                        if (count % 2 != 0)
+                        if (cmdLine[i] == '`')
                         {
-                            b.Append("|dos2unix");
+                            if (count % 2 != 0)
+                            {
+                                b.Append("|dos2unix");
+                            }
+                            count++;
                         }
-                        count++;
+                        b.Append(cmdLine[i]);
                     }
-                    b.Append(cmdLine[i]);
+                    cmdLine = b.ToString();
                 }
-                cmdLine = b.ToString();
                 psi.Arguments = String.Format("-c \"{0}\"", cmdLine);
             }
 
-            Console.WriteLine(cmdLine);
+            //Console.WriteLine(cmdLine);
             using (Process p = Process.Start(psi))
             {
+                while (!p.StandardOutput.EndOfStream)
+                {
+                    consoleOutput += p.StandardOutput.ReadLine();
+                }
                 p.WaitForExit();
                 int ret = p.ExitCode;
                 if (ret != 0)
@@ -188,7 +188,7 @@ namespace CSCacheLib
                     Error("[Fail] {0}", ret);
                 }
             }
-
+            return consoleOutput;
         }
         static void Error(string msg, params object[] args)
         {
