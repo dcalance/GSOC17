@@ -97,7 +97,9 @@ namespace CSCacheLib
         static void CompareCache(byte[] inputCache, byte[] filesCache)
         {
             string filename = BitConverter.ToString(inputCache).Replace("-", string.Empty);
-            string path = (IsUnix) ? @"$HOME/.cscache/" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
+            
+            string path = (IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/" 
+            					   : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -126,13 +128,7 @@ namespace CSCacheLib
 
         static void GenerateCache(string path, string filename, byte[] filesCache)
         {
-            using (FileStream fs = File.Create(path + filename))
-            {
-                using (BinaryWriter bw = new BinaryWriter(fs))
-                {
-                    bw.Write(filesCache);
-                }
-            }
+            
 
             StringBuilder sb = new StringBuilder();
             sb.Append(compilatorName + " ");
@@ -145,11 +141,20 @@ namespace CSCacheLib
                 sb.Append(item + " ");
             }
             sb.Append("-out:" + outputFile);
+
             int error;
             Console.WriteLine(Execute(sb.ToString(), out error));
             if (error == 0)
             {
                 File.Copy(outputFile, path + filename + "bin", true);
+
+                using (FileStream fs = File.Create(path + filename))
+            	{
+	                using (BinaryWriter bw = new BinaryWriter(fs))
+	                {
+	                    bw.Write(filesCache);
+	                }
+            	}
             }
         }
 
