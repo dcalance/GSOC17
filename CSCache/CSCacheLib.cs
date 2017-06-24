@@ -21,9 +21,10 @@ namespace CSCacheLib
             }
         }
         static bool use_dos2unix = true;
-        static string compilatorInfo;
+        static string compilatorName = null;
+        static string compilatorInfo = null;
         static List<string> compilatorArgs = new List<string>();
-        static string outputFile;
+        static string outputFile = null;
         static List<string> inputFiles = new List<string>();
 
         public static void CSCache_main(string[] args)
@@ -60,39 +61,157 @@ namespace CSCacheLib
             {
                 //error
             }
-
-            compilatorInfo = Execute(compilatorInfo + " --version", out error);
+            compilatorInfo = Execute(compilatorName + " --version", out error);
             if (error == 0)
             {
-            	Console.WriteLine(compilatorInfo);
+                byte[] inputCache;
+                byte[] filesCache;
+
+                inputCache = GenerateInputCache();
+                filesCache = GenerateFilesCache();
+
+                CompareCache(inputCache, filesCache);
             }
             else
             {
             	Console.WriteLine("Incompatible compiler.");
             	Console.WriteLine(compilatorInfo);
             }
-            Console.WriteLine("Input files:");
-            foreach(var item in inputFiles)
+            
+        }
+
+        static bool CompareMD5(byte[] input1, byte[] input2)
+        {
+            int i = 0;
+            while ((i < input1.Length) && (input1[i] == input2[i]))
             {
-            	Console.Write(item + " ");
+                i += 1;
             }
-            Console.WriteLine();
-            foreach(var bytte in MakeMD5File("CSCache.cs"))
+            if (i == input1.Length)
             {
-            	Console.WriteLine(bytte);
+                return true;
+            }
+            return false;
+        }
+
+        static void CompareCache(byte[] inputCache, byte[] filesCache)
+        {
+            string filename = BitConverter.ToString(inputCache).Replace("-", string.Empty);
+            string path = (IsUnix) ? @"$HOME/.cscache/" : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            if (File.Exists(path + filename))
+            {
+                byte[] fileBytes = File.ReadAllBytes(path + filename);
+                bool isEqual = CompareMD5(fileBytes, filesCache);
+
+                if (isEqual)
+                {
+                    File.Copy(path + filename + "bin", outputFile, true);
+                    Console.WriteLine("binaries returned");
+                }
+                else
+                {
+                    GenerateCache(path, filename, filesCache);
+                }
+            }
+            else
+            {
+                GenerateCache(path, filename, filesCache);
             }
         }
 
-        static void GenerateInputCache()
+        static void GenerateCache(string path, string filename, byte[] filesCache)
         {
-        	
+            using (FileStream fs = File.Create(path + filename))
+            {
+                using (BinaryWriter bw = new BinaryWriter(fs))
+                {
+                    bw.Write(filesCache);
+                }
+            }
+
+            StringBuilder sb = new StringBuilder();
+            sb.Append(compilatorName + " ");
+            foreach (var item in inputFiles)
+            {
+                sb.Append(item + " ");
+            }
+            foreach (var item in compilatorArgs)
+            {
+                sb.Append(item + " ");
+            }
+            sb.Append("-out:" + outputFile);
+            int error;
+            Console.WriteLine(Execute(sb.ToString(), out error));
+            if (error == 0)
+            {
+                File.Copy(outputFile, path + filename + "bin", true);
+            }
+        }
+
+        static byte[] GenerateFilesCache()
+        {
+            List<byte[]> filesCache = new List<byte[]>();
+
+            foreach (var item in inputFiles)
+            {
+                if (File.Exists(item))
+                {
+                    filesCache.Add(MakeMD5File(item));
+                }
+                else
+                {
+                    Error(item + " not found.");
+                }
+            }
+            return CombineHashes(filesCache);
+        }
+
+        static byte[] CombineHashes(List<byte[]> input)
+        {
+            byte[] byteArr;
+            byte[] inputArr = new byte[input[0].Length * input.Count];
+            int line = 0;
+
+            foreach (var item in input)
+            {
+                item.CopyTo(inputArr, item.Length * line);
+                line += 1;
+            }
+
+            using (var md5 = MD5.Create())
+            {
+                byteArr = md5.ComputeHash(inputArr);
+            }
+            return byteArr;
+        }
+
+        static byte[] GenerateInputCache()
+        {
+            StringBuilder inputConcat = new StringBuilder();
+
+            inputConcat.Append(compilatorInfo);
+            foreach (var item in compilatorArgs)
+            {
+                inputConcat.Append(item);
+            }
+            inputConcat.Append(outputFile);
+            foreach (var item in inputFiles)
+            {
+                inputConcat.Append(item);
+            }
+
+            return MakeMD5String(inputConcat.ToString());
         }
 
         static void ProcessInputCompilator(string compilatorWithParams)
         {
             string[] compParams = compilatorWithParams.Split(' ');
-            string compilatorName = compParams[0];
-            compilatorInfo = compilatorName;
+            compilatorName = compParams[0];
 
             for (int i = 1; i < compParams.Length; i++)
             {
@@ -119,6 +238,11 @@ namespace CSCacheLib
                     }
                 }
             }
+            if (outputFile == null)
+            {
+                outputFile = "out.exe";
+            }
+
             compilatorArgs.Sort();
             inputFiles.Sort();
         }
