@@ -24,12 +24,13 @@ namespace CSCacheLib
         static string compilatorInfo;
         static List<string> compilatorArgs = new List<string>();
         static string outputFile;
-        static string inputFile;
+        static List<string> inputFiles = new List<string>();
 
         public static void CSCache_main(string[] args)
         {
             string inputCompilator = null;
             bool recievedComp = false;
+            int error;
 
             foreach (var item in args)
             {
@@ -59,17 +60,34 @@ namespace CSCacheLib
             {
                 //error
             }
-            Console.WriteLine($"input file = {inputFile}");
-            Console.WriteLine($"output file = {outputFile}");
-            Console.WriteLine($"compilator name = {compilatorInfo}");
-            Console.WriteLine("copilator args:");
-            foreach (var item in compilatorArgs)
+
+            compilatorInfo = Execute(compilatorInfo + " --version", out error);
+            if (error == 0)
             {
-                Console.Write(item + " ");
+            	Console.WriteLine(compilatorInfo);
             }
-            Execute("cd");
-            //Console.WriteLine(Execute("cd"));
+            else
+            {
+            	Console.WriteLine("Incompatible compiler.");
+            	Console.WriteLine(compilatorInfo);
+            }
+            Console.WriteLine("Input files:");
+            foreach(var item in inputFiles)
+            {
+            	Console.Write(item + " ");
+            }
+            Console.WriteLine();
+            foreach(var bytte in MakeMD5File("CSCache.cs"))
+            {
+            	Console.WriteLine(bytte);
+            }
         }
+
+        static void GenerateInputCache()
+        {
+        	
+        }
+
         static void ProcessInputCompilator(string compilatorWithParams)
         {
             string[] compParams = compilatorWithParams.Split(' ');
@@ -80,7 +98,7 @@ namespace CSCacheLib
             {
                 if (compParams[i][0] != '-')
                 {
-                    inputFile = compParams[i];
+                    inputFiles.Add(compParams[i]);
                 }
                 else
                 {
@@ -102,24 +120,36 @@ namespace CSCacheLib
                 }
             }
             compilatorArgs.Sort();
+            inputFiles.Sort();
         }
-        public static void MakeMD5(string filename)
+
+        static byte[] MakeMD5String(string input)
         {
+        	byte[] byteArr;
+        	using (var md5 = MD5.Create())
+        	{
+        		byte[] intputBytes = System.Text.Encoding.ASCII.GetBytes(input);
+        		byteArr = md5.ComputeHash(intputBytes);
+        	}
+        	return byteArr;
+        }
+
+        static byte[] MakeMD5File(string filename)
+        {
+        	byte[] byteArr;
         	using (var md5 = MD5.Create())
         	{
         		using (var stream = File.OpenRead(filename))
         		{
-        			byte[] byteArr = md5.ComputeHash(stream);
-        			using (var file = new BinaryWriter(File.OpenWrite("out.txt")))
-        			{
-        				file.Write(byteArr);
-        			}
+        			byteArr = md5.ComputeHash(stream);
         		}
         	}
+        	return byteArr;
         }
-        public static string Execute(string cmdLine)
+
+        public static string Execute(string cmdLine, out int errCode)
         {
-            string consoleOutput = null;
+            List<string> consoleOutput = new List<string>();
             if (use_dos2unix == true)
                 try
                 {
@@ -144,6 +174,7 @@ namespace CSCacheLib
             ProcessStartInfo psi = new ProcessStartInfo();
             psi.UseShellExecute = false;
             psi.RedirectStandardOutput = true;
+            psi.RedirectStandardError = true;
 
             if (use_dos2unix == false && !IsUnix)
             {
@@ -179,22 +210,21 @@ namespace CSCacheLib
             {
                 while (!p.StandardOutput.EndOfStream)
                 {
-                    consoleOutput += p.StandardOutput.ReadLine();
+                    consoleOutput.Add(p.StandardOutput.ReadLine());
+                }
+                while (!p.StandardError.EndOfStream)
+                {
+                	consoleOutput.Add(p.StandardError.ReadLine());
                 }
                 p.WaitForExit();
-                int ret = p.ExitCode;
-                if (ret != 0)
-                {
-                    Error("[Fail] {0}", ret);
-                }
+                errCode = p.ExitCode;
             }
-            return consoleOutput;
+            return string.Join("\n", consoleOutput);
         }
         static void Error(string msg, params object[] args)
         {
-            Console.Error.WriteLine("ERROR: {0}", string.Format(msg, args));
+            Console.WriteLine("ERROR: {0}", string.Format(msg, args));
             Environment.Exit(1);
         }
-        [DllImport("libc")] static extern int system(string s);
     }
 }
