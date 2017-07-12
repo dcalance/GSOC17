@@ -1,0 +1,1 @@
+mcs -r:System.Configuration.dll -t:library Config.cs ConsoleTools.cs CSCacheLib.cs FilesTools.cs MD5Tools.cs -out:CSCacheLib.dll & pause
