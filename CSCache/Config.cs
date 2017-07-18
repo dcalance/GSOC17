@@ -13,6 +13,8 @@ namespace CSCacheLib
         public string versionArg { get; private set; } = null;
         public string resourcesArg { get; private set; } = null;
         public string outputArg { get; private set; } = null;
+        public string targetArg { get; private set; } = null;
+        public string recurseArg { get; private set; } = null;
 
         string path = (ConsoleTools.IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/"
                                    : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
@@ -80,6 +82,12 @@ namespace CSCacheLib
                     case "OutputArgument":
                         outputArg = item.Value;
                         break;
+                    case "TagetArgument":
+                        targetArg = item.Value;
+                        break;
+                    case "RecurseArgument":
+                        recurseArg = item.Value;
+                        break;
                 }
             }
         }
@@ -94,6 +102,7 @@ namespace CSCacheLib
             sb.AppendLine("\t\t<add key=\"VersionArgument\" value=\"--version\"/>");
             sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\"-r:\"/>");
             sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:\"/>");
+            sb.AppendLine("<add key=\"TagetArgument\" value=\"-t:\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
             File.WriteAllText(path + "config.xml", sb.ToString());

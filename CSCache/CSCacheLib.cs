@@ -15,6 +15,7 @@ namespace CSCacheLib
         static List<string> compilatorArgs = new List<string>();
         static List<string> inputFiles = new List<string>();
         static List<string> resourceFiles = new List<string>();
+        Config configuration = new Config();
 
         public static void CSCache_main(string[] args)
         {
@@ -52,7 +53,7 @@ namespace CSCacheLib
             {
                 //error
             }
-            compilatorInfo = ConsoleTools.Execute(compilatorName + " --version", out error);
+            compilatorInfo = ConsoleTools.Execute(compilatorName + configuration.versionArg, out error);
             if (error == 0)
             {
                 byte[] inputCache;
@@ -67,8 +68,7 @@ namespace CSCacheLib
             }
             else
             {
-            	Console.WriteLine("Incompatible compiler.");
-            	Console.WriteLine(compilatorInfo);
+            	ConsoleTools.Error("Error getting the version of the compiler. Check the configuration file.");
             }
             
         }
@@ -115,13 +115,13 @@ namespace CSCacheLib
             }
             foreach (var item in resourceFiles)
             {
-                sb.Append($"-r:'{item}' ");
+                sb.Append($"{configuration.resourcesArg}'{item}' ");
             }
             foreach (var item in compilatorArgs)
             {
                 sb.Append(item + " ");
             }
-            sb.Append("-out:" + outputFile);
+            sb.Append($"{configuration.outputArg}'{outputFile}'");
 
             int error;
             Console.WriteLine(ConsoleTools.Execute(sb.ToString(), out error));
@@ -174,19 +174,13 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    if (compParams[i].Length > 4 && compParams[i].Substring(0, 5) == "-out:")
+                    if (compParams[i].Length > configuration.outputArg.Length && compParams[i].Substring(0, 5) == configuration.outputArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         outputFile = outputArg[1];
                     }
                     else
-                    if ((compParams[i].Length == 2 && compParams[i].Substring(0, 2) == "-o") || 
-                    	(compParams[i].Length == 8 && compParams[i].Substring(0, 8) == "--output"))
-                    {
-                        outputFile = compParams[++i];
-                    }
-                    else
-                    if (compParams[i].Length > 3 && compParams[i].Substring(0, 3) == "-r:")
+                    if (compParams[i].Length > configuration.resourcesArg.Length && compParams[i].Substring(0, 3) == configuration.resourcesArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         resourceFiles.Add(outputArg[1]);
