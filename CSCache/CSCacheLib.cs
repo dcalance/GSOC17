@@ -15,15 +15,13 @@ namespace CSCacheLib
         static List<string> compilatorArgs = new List<string>();
         static List<string> inputFiles = new List<string>();
         static List<string> resourceFiles = new List<string>();
-        Config configuration = new Config();
+        static Config configuration = new Config();
 
         public static void CSCache_main(string[] args)
         {
             string inputCompilator = null;
             bool recievedComp = false;
             int error;
-
-            Config cfg = new Config();
 
             foreach (var item in args)
             {
@@ -53,7 +51,7 @@ namespace CSCacheLib
             {
                 //error
             }
-            compilatorInfo = ConsoleTools.Execute(compilatorName + configuration.versionArg, out error);
+            compilatorInfo = ConsoleTools.Execute(compilatorName + " " + configuration.versionArg, out error);
             if (error == 0)
             {
                 byte[] inputCache;
@@ -76,9 +74,8 @@ namespace CSCacheLib
         static void CompareCache(byte[] inputCache, byte[] filesCache)
         {
             string filename = BitConverter.ToString(inputCache).Replace("-", string.Empty);
-            
-            string path = (ConsoleTools.IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/" 
-            					   : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
+
+            string path = configuration.cacheLocation;
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -174,19 +171,19 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    if (compParams[i].Length > configuration.outputArg.Length && compParams[i].Substring(0, 5) == configuration.outputArg)
+                    if (compParams[i].Length > configuration.outputArg.Length && compParams[i].Substring(0, configuration.outputArg.Length) == configuration.outputArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         outputFile = outputArg[1];
                     }
                     else
-                    if (compParams[i].Length > configuration.resourcesArg.Length && compParams[i].Substring(0, 3) == configuration.resourcesArg)
+                    if (compParams[i].Length > configuration.resourcesArg.Length && compParams[i].Substring(0, configuration.resourcesArg.Length) == configuration.resourcesArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         resourceFiles.Add(outputArg[1]);
                     }
                     else
-                    if (compParams[i].Length > 3 && compParams[i].Substring(0, 3) == "-t:")
+                    if (compParams[i].Length > configuration.targetArg.Length && compParams[i].Substring(0, configuration.targetArg.Length) == configuration.targetArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         switch(outputArg[1])
@@ -203,7 +200,7 @@ namespace CSCacheLib
                         compilatorArgs.Add(compParams[i]);
                     }
                     else
-                    if (compParams[i].Length > 9 && compParams[i].Substring(0, 9) == "-recurse:")
+                    if (compParams[i].Length > configuration.recurseArg.Length && compParams[i].Substring(0, configuration.recurseArg.Length) == configuration.recurseArg)
                     {
                         string[] outputArg = compParams[i].Split(':');
                         string[] files = FilesTools.GetRecurseFiles(outputArg[1]);
@@ -218,15 +215,19 @@ namespace CSCacheLib
                     }
                 }
             }
+
             if (outputFile == null)
             {
+                string outPathFile = Path.GetFullPath(inputFiles[0]);
+                outPathFile = Path.ChangeExtension(outPathFile, null);
+
                 if (outputExtension == null)
                 {
-                    outputFile = "out.exe";
+                    outputFile = outPathFile + ".exe";
                 }
                 else
                 {
-                    outputFile = "out" + outputExtension;
+                    outputFile = outPathFile + outputExtension;
                 }
             }
             compilatorArgs.Sort();
