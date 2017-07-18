@@ -102,7 +102,7 @@ namespace CSCacheLib
             sb.AppendLine("\t\t<add key=\"VersionArgument\" value=\"--version\"/>");
             sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\"-r:\"/>");
             sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:\"/>");
-            sb.AppendLine("<add key=\"TagetArgument\" value=\"-t:\"/>");
+            sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
             File.WriteAllText(path + "config.xml", sb.ToString());
