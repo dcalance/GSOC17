@@ -37,7 +37,6 @@ namespace CSCacheLib
 
         string[] ProcessArray(string input)
         {
-            input = input.Replace(" ", "");
             string[] result = input.Split(',');
             return result;
         }
@@ -91,10 +90,10 @@ namespace CSCacheLib
             sb.AppendLine("<configuration>");
             sb.AppendLine("\t<appSettings>");
             sb.AppendLine($"\t\t<add key=\"CacheLocation\" value=\"{path}\"/>");
-            sb.AppendLine("\t\t<add key=\"IgnoredArguments\" value=\"--stacktrace, --timestamp, -v\"/>");
+            sb.AppendLine("\t\t<add key=\"IgnoredArguments\" value=\"--stacktrace,--timestamp,-v\"/>");
             sb.AppendLine("\t\t<add key=\"VersionArgument\" value=\"--version\"/>");
-            sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\" - r:\"/>");
-            sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\" -out:\"/>");
+            sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\"-r:\"/>");
+            sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
             File.WriteAllText(path + "config.xml", sb.ToString());
