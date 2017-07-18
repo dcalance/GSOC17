@@ -1,6 +1,6 @@
 public class Hello
 {
-   public static void Func()
+   public static void Main()
    {
       System.Console.WriteLine("Hello, World!");
    }
