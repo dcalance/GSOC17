@@ -105,6 +105,7 @@ namespace CSCacheLib
             sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
+            Directory.CreateDirectory(path);
             File.WriteAllText(path + "config.xml", sb.ToString());
         }
     }
