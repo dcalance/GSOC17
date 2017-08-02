@@ -10,28 +10,28 @@ namespace CSCacheLib
     {
         public string cacheLocation { get; private set; } = null;
         public string[] ignoredArg { get; private set; } = null;
-        public string versionArg { get; private set; } = null;
-        public string resourcesArg { get; private set; } = null;
-        public string outputArg { get; private set; } = null;
-        public string targetArg { get; private set; } = null;
-        public string recurseArg { get; private set; } = null;
+        public string[] versionArg { get; private set; } = null;
+        public string[] resourcesArg { get; private set; } = null;
+        public string[] outputArg { get; private set; } = null;
+        public string[] targetArg { get; private set; } = null;
+        public string[] recurseArg { get; private set; } = null;
 
         string path = (ConsoleTools.IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/"
                                    : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
 
         public Config()
 	    {
-            if(File.Exists(path + "config.xml"))
-            {
-                ProcessConfigFile(path + "config.xml");
-            }
-            else
+            if(!File.Exists(path + "config.xml"))
             {
                 Console.WriteLine("Config file not found. Loading default configuration.");
                 LoadDefaultConfig();
+            }
+            else
+            {
                 ProcessConfigFile(path + "config.xml");
             }
-            if(cacheLocation == null || ignoredArg == null || versionArg == null || resourcesArg == null || outputArg == null)
+
+            if(cacheLocation == null || versionArg == null || resourcesArg == null || outputArg == null)
             {
                 ConsoleTools.Error("Error in file configuration.");
             }
@@ -39,6 +39,7 @@ namespace CSCacheLib
 
         string[] ProcessArray(string input)
         {
+            input = input.Replace(" ", "");
             string[] result = input.Split(',');
             return result;
         }
@@ -74,19 +75,19 @@ namespace CSCacheLib
                         ignoredArg = ProcessArray(item.Value);
                         break;
                     case "VersionArgument":
-                        versionArg = item.Value;
+                        versionArg = ProcessArray(item.Value);
                         break;
                     case "ResourcesArgument":
-                        resourcesArg = item.Value;
+                        resourcesArg = ProcessArray(item.Value);
                         break;
                     case "OutputArgument":
-                        outputArg = item.Value;
+                        outputArg = ProcessArray(item.Value);
                         break;
                     case "TagetArgument":
-                        targetArg = item.Value;
+                        targetArg = ProcessArray(item.Value);
                         break;
                     case "RecurseArgument":
-                        recurseArg = item.Value;
+                        recurseArg = ProcessArray(item.Value);
                         break;
                 }
             }
