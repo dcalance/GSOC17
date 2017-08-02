@@ -11,6 +11,7 @@ namespace CSCacheLib
         static string compilatorInfo = null;
         static string outputExtension = null;
         static string outputFile = null;
+        static bool isOutputSpecified = false;
 
         static List<string> compilatorArgs = new List<string>();
         static List<string> inputFiles = new List<string>();
@@ -21,7 +22,7 @@ namespace CSCacheLib
         {
             string inputCompilator = null;
             bool recievedComp = false;
-            int error;
+            int error = -1;
 
             foreach (var item in args)
             {
@@ -51,7 +52,16 @@ namespace CSCacheLib
             {
                 //error
             }
-            compilatorInfo = ConsoleTools.Execute(compilatorName + " " + configuration.versionArg, out error);
+            int counter;
+            for (counter = 0; counter < configuration.versionArg.Length; counter += 1)
+            {
+                compilatorInfo = ConsoleTools.Execute(compilatorName + " " + configuration.versionArg[counter], out error);
+                if (error == 0)
+                {
+                    break;
+                }
+            }
+
             if (error == 0)
             {
                 byte[] inputCache;
@@ -88,8 +98,8 @@ namespace CSCacheLib
 
                 if (isEqual)
                 {
-                    File.Copy(path + filename + "bin", outputFile, true);
                     Console.WriteLine("binaries returned");
+                    File.Copy(path + filename + "bin", outputFile, true);
                 }
                 else
                 {
@@ -118,7 +128,15 @@ namespace CSCacheLib
             {
                 sb.Append(item + " ");
             }
-            sb.Append($"{configuration.outputArg}'{outputFile}'");
+            if (isOutputSpecified)
+            {
+                sb.Append($"{configuration.outputArg[0]}");
+                if (configuration.outputArg[0][configuration.outputArg[0].Length - 1] != ':')
+                {
+                    sb.Append(" ");
+                }
+                sb.Append($"'{outputFile}'");
+            }
 
             int error;
             Console.WriteLine(ConsoleTools.Execute(sb.ToString(), out error));
@@ -158,6 +176,40 @@ namespace CSCacheLib
             return MD5Tools.MakeMD5String(inputConcat.ToString());
         }
 
+        static bool ContainsStringFromStart(string input, out int argType, params string[] checkStr) //argType = 0 for arguments of type -arg:file , argType = 1 for arguments of type -arg file
+        {
+            argType = -1;
+            foreach (var item in checkStr)
+            {
+                if (input.Length > item.Length && input.Substring(0, item.Length) == item)
+                {
+                    if (item[item.Length - 1] == ':')
+                    {
+                        argType = 0;
+                    }
+                    else
+                    {
+                        argType = 1;
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        static string SplitArg(string input, int argType, string nextElement)
+        {
+            if (argType == 0)
+            {
+                string[] split = input.Split(':');
+                return split[1];
+            }
+            else
+            {
+                return nextElement;
+            }
+        }
+
         static void ProcessInputCompilator(string compilatorWithParams)
         {
             string[] compParams = compilatorWithParams.Split(' ');
@@ -171,22 +223,22 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    if (compParams[i].Length > configuration.outputArg.Length && compParams[i].Substring(0, configuration.outputArg.Length) == configuration.outputArg)
+                    int argType;
+                    if (ContainsStringFromStart(compParams[i], out argType, configuration.outputArg))
                     {
-                        string[] outputArg = compParams[i].Split(':');
-                        outputFile = outputArg[1];
+                        outputFile = SplitArg(compParams[i], argType, (i < compParams.Length - 1) ? compParams[i + 1] : null);
+                        isOutputSpecified = true;
                     }
                     else
-                    if (compParams[i].Length > configuration.resourcesArg.Length && compParams[i].Substring(0, configuration.resourcesArg.Length) == configuration.resourcesArg)
+                    if (ContainsStringFromStart(compParams[i], out argType, configuration.resourcesArg))
                     {
-                        string[] outputArg = compParams[i].Split(':');
-                        resourceFiles.Add(outputArg[1]);
+                        resourceFiles.Add(SplitArg(compParams[i], argType, (i < compParams.Length - 1) ? compParams[i + 1] : null));
                     }
                     else
-                    if (compParams[i].Length > configuration.targetArg.Length && compParams[i].Substring(0, configuration.targetArg.Length) == configuration.targetArg)
+                    if (ContainsStringFromStart(compParams[i], out argType, configuration.targetArg))
                     {
-                        string[] outputArg = compParams[i].Split(':');
-                        switch(outputArg[1])
+                        string outputArg = SplitArg(compParams[i], argType, (i < compParams.Length - 1) ? compParams[i + 1] : null);
+                        switch (outputArg)
                         {
                             case "exe":
                                 outputExtension = ".exe";
@@ -200,10 +252,10 @@ namespace CSCacheLib
                         compilatorArgs.Add(compParams[i]);
                     }
                     else
-                    if (compParams[i].Length > configuration.recurseArg.Length && compParams[i].Substring(0, configuration.recurseArg.Length) == configuration.recurseArg)
+                    if (ContainsStringFromStart(compParams[i], out argType, configuration.recurseArg))
                     {
-                        string[] outputArg = compParams[i].Split(':');
-                        string[] files = FilesTools.GetRecurseFiles(outputArg[1]);
+                        string outputArg = SplitArg(compParams[i], argType, (i < compParams.Length - 1) ? compParams[i + 1] : null);
+                        string[] files = FilesTools.GetRecurseFiles(outputArg);
                         foreach (var item in files)
                         {
                             inputFiles.Add(item);
