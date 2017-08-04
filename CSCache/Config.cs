@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Configuration;
 using System.Text;
+using System.Linq;
 
 namespace CSCacheLib
 {
@@ -26,10 +27,7 @@ namespace CSCacheLib
                 Console.WriteLine("Config file not found. Loading default configuration.");
                 LoadDefaultConfig();
             }
-            else
-            {
-                ProcessConfigFile(path + "config.xml");
-            }
+            ProcessConfigFile(path + "config.xml");
 
             if(cacheLocation == null || versionArg == null || resourcesArg == null || outputArg == null)
             {
@@ -41,20 +39,23 @@ namespace CSCacheLib
         {
             input = input.Replace(" ", "");
             string[] result = input.Split(',');
+            result = result.Where(x => !string.IsNullOrEmpty(x)).ToArray();
             return result;
         }
 
         string ProcessPath(string input)
         {
-            string[] inputSplit = input.Split('%');
-            if (inputSplit.Length > 2)
+            int error;
+            string result;
+            if (ConsoleTools.IsUnix)
             {
-                return Environment.GetEnvironmentVariable(inputSplit[1]) + inputSplit[2];
+                result = ConsoleTools.Execute($"echo '{input}'", out error);
             }
             else
             {
-                return input;
-            }   
+                result = ConsoleTools.Execute($"echo {input}", out error);
+            }
+            return result;
         }
 
         void ProcessConfigFile(string configFilename)
@@ -104,6 +105,7 @@ namespace CSCacheLib
             sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\"-r:\"/>");
             sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:\"/>");
             sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:\"/>");
+            sb.AppendLine("\t\t<add key=\"RecurseArgument\" value=\"-recurse:\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
             Directory.CreateDirectory(path);
