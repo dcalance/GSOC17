@@ -1,0 +1,5 @@
+C:\Users\User\Desktop\gsoc\GSOC17\CSCache\obj\x86\Debug\CSCache.csprojResolveAssemblyReference.cache
+C:\Users\User\Desktop\gsoc\GSOC17\CSCache\bin\Debug\ConsoleApplication.dll
+C:\Users\User\Desktop\gsoc\GSOC17\CSCache\bin\Debug\ConsoleApplication.pdb
+C:\Users\User\Desktop\gsoc\GSOC17\CSCache\obj\x86\Debug\ConsoleApplication.dll
+C:\Users\User\Desktop\gsoc\GSOC17\CSCache\obj\x86\Debug\ConsoleApplication.pdb
