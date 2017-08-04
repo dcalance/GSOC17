@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
+using System.Linq;
 
 namespace CSCacheLib
 {
@@ -45,6 +46,7 @@ namespace CSCacheLib
             psi.UseShellExecute = false;
             psi.RedirectStandardOutput = true;
             psi.RedirectStandardError = true;
+            psi.RedirectStandardInput = true;
 
             if (use_dos2unix == false && !IsUnix)
             {
@@ -77,17 +79,21 @@ namespace CSCacheLib
 
             using (Process p = Process.Start(psi))
             {
-                while (!p.StandardOutput.EndOfStream)
-                {
-                    consoleOutput.Add(p.StandardOutput.ReadLine());
-                }
+                //p.EnableRaisingEvents = true;
                 while (!p.StandardError.EndOfStream)
                 {
                     consoleOutput.Add(p.StandardError.ReadLine());
                 }
+                while (!p.StandardOutput.EndOfStream)
+                {
+                    consoleOutput.Add(p.StandardOutput.ReadLine());
+                }
                 p.WaitForExit();
                 errCode = p.ExitCode;
             }
+
+            consoleOutput = consoleOutput.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().ToList();
+
             return string.Join("\n", consoleOutput);
         }
 
