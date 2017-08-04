@@ -66,13 +66,15 @@ namespace CSCacheLib
             {
                 byte[] inputCache;
                 byte[] filesCache;
+                byte[] combinedCache;
 
                 FilesTools.GenerateFullPath(ref inputFiles, ref resourceFiles);
 
                 inputCache = GenerateInputCache();
                 filesCache = MD5Tools.GenerateFilesCache(inputFiles);
+                combinedCache = MD5Tools.CombineHashes(new List<byte[]> { inputCache, filesCache});
 
-                CompareCache(inputCache, filesCache);
+                CompareCache(combinedCache);
             }
             else
             {
@@ -81,11 +83,11 @@ namespace CSCacheLib
             
         }
 
-        static void CompareCache(byte[] inputCache, byte[] filesCache)
+        static void CompareCache(byte[] combinedCache)
         {
-            string filename = BitConverter.ToString(inputCache).Replace("-", string.Empty);
-
+            string filename = BitConverter.ToString(combinedCache).Replace("-", string.Empty);
             string path = configuration.cacheLocation;
+
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);
@@ -93,26 +95,17 @@ namespace CSCacheLib
 
             if (File.Exists(path + filename))
             {
-                byte[] fileBytes = File.ReadAllBytes(path + filename);
-                bool isEqual = MD5Tools.CompareMD5(fileBytes, filesCache);
-
-                if (isEqual)
-                {
-                    Console.WriteLine("binaries returned");
-                    File.Copy(path + filename + "bin", outputFile, true);
-                }
-                else
-                {
-                    GenerateCache(path, filename, filesCache);
-                }
+                Console.WriteLine("Binares Returned.");
+                Console.WriteLine(File.ReadAllText(path + filename));
+                File.Copy(path + filename + "bin", outputFile, true);
             }
             else
             {
-                GenerateCache(path, filename, filesCache);
+                GenerateCache(path, filename);
             }
         }
 
-        static void GenerateCache(string path, string filename, byte[] filesCache)
+        static void GenerateCache(string path, string filename)
         {
             StringBuilder sb = new StringBuilder();
             sb.Append(compilatorName + " ");
@@ -139,18 +132,13 @@ namespace CSCacheLib
             }
 
             int error;
-            Console.WriteLine(ConsoleTools.Execute(sb.ToString(), out error));
+            string executeMessage = ConsoleTools.Execute(sb.ToString(), out error);
+            Console.WriteLine(executeMessage);
+
             if (error == 0)
             {
                 File.Copy(outputFile, path + filename + "bin", true);
-
-                using (FileStream fs = File.Create(path + filename))
-            	{
-	                using (BinaryWriter bw = new BinaryWriter(fs))
-	                {
-	                    bw.Write(filesCache);
-	                }
-            	}
+                File.WriteAllText(path + filename, executeMessage);
             }
         }
 
@@ -243,8 +231,14 @@ namespace CSCacheLib
                             case "exe":
                                 outputExtension = ".exe";
                                 break;
+                            case "winexe":
+                                outputExtension = ".exe";
+                                break;
                             case "library":
                                 outputExtension = ".dll";
+                                break;
+                            case "module":
+                                outputExtension = ".netmodule";
                                 break;
                             default:
                                 break;
