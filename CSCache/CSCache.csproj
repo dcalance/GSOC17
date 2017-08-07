@@ -38,6 +38,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Options">
+      <HintPath>.\Options.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -51,6 +54,7 @@
     <Compile Include="ConsoleTools.cs" />
     <Compile Include="CSCacheLib.cs" />
     <Compile Include="FilesTools.cs" />
+    <Compile Include="LibArgs.cs" />
     <Compile Include="MD5Tools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
