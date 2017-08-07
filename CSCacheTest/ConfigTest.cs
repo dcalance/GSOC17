@@ -27,40 +27,17 @@ namespace CSCacheTest
             CollectionAssert.AreEqual(expectedRes, result);
         }
         [TestMethod]
-        public void TestProcessPath()
-        {
-            //these tests are valid for windows
-
-            string path = "%appdata%\\.cscache";
-            string expectedPath = $"{Environment.GetEnvironmentVariable("appdata")}\\.cscache";
-
-            Config conf = new Config();
-            PrivateObject obj = new PrivateObject(conf);
-
-            string result = (string)obj.Invoke("ProcessPath", path);
-            Assert.AreEqual(expectedPath, result);
-
-            path = @"$home\.cscache";
-            expectedPath = @"$home\.cscache";
-            result = (string)obj.Invoke("ProcessPath", path);
-            Assert.AreEqual(expectedPath, result);
-
-            path = "C:\\users";
-            expectedPath = "C:\\users";
-            result = (string)obj.Invoke("ProcessPath", path);
-            Assert.AreEqual(expectedPath, result);
-        }
-        [TestMethod]
         public void TestConfigClass()
         {
             string expectedCacheLocation = (ConsoleTools.IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/"
                                    : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
-            string[] expectedIgnoredArg = { "--stacktrace", "--timestamp", "-v"};
+            string[] expectedIgnoredArg = { "--stacktrace", "--timestamp", "-v" };
             string[] expectedVersionArg = { "--version" };
             string[] expectedResourcesArg = { "-r:" };
             string[] expectedOutputArg = { "-out:" };
             string[] expectedTargetArg = { "-t:" };
             string[] expectedRecurseArg = { "-recurse:" };
+            string expectedDefaultExtension = ".exe";
 
             File.Delete(expectedCacheLocation + "config.xml");
             Config conf = new Config();
@@ -72,6 +49,7 @@ namespace CSCacheTest
             CollectionAssert.AreEqual(expectedOutputArg, conf.outputArg);
             CollectionAssert.AreEqual(expectedTargetArg, conf.targetArg);
             CollectionAssert.AreEqual(expectedRecurseArg, conf.recurseArg);
+            Assert.AreEqual(expectedDefaultExtension, conf.defaultExtension);
 
             Assert.IsTrue(File.Exists(expectedCacheLocation + "config.xml"));
         }

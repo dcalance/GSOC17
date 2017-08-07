@@ -5,3 +5,4 @@ C:\Users\User\Desktop\gsoc\GSOC17\CSCacheTest\bin\Debug\ConsoleApplication.pdb
 C:\Users\User\Desktop\gsoc\GSOC17\CSCacheTest\obj\Debug\CSCacheTest.csprojResolveAssemblyReference.cache
 C:\Users\User\Desktop\gsoc\GSOC17\CSCacheTest\obj\Debug\CSCacheTest.dll
 C:\Users\User\Desktop\gsoc\GSOC17\CSCacheTest\obj\Debug\CSCacheTest.pdb
+C:\Users\User\Desktop\gsoc\GSOC17\CSCacheTest\bin\Debug\Options.dll

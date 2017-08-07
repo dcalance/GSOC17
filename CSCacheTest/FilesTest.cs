@@ -22,8 +22,8 @@ namespace CSCacheTest
             filesList.Add("testDir\\input1.cs");
             filesList.Add("testDir\\input2.cs");
 
-            File.WriteAllText("testDir\\resource1.cs", "text");
-            File.WriteAllText("testDir\\resource2.cs", "text");
+            File.WriteAllText("testDir\\resource1.dll", "text");
+            File.WriteAllText("testDir\\resource2.dll", "text");
             resourcesList.Add("testDir\\resource1.dll");
             resourcesList.Add("testDir\\resource2.dll");
 
