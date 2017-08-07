@@ -18,20 +18,6 @@ namespace CSCacheLib
             return MD5Tools.CombineHashes(filesCache);
         }
 
-        public static bool CompareMD5(byte[] input1, byte[] input2)
-        {
-            int i = 0;
-            while ((i < input1.Length) && (input1[i] == input2[i]))
-            {
-                i += 1;
-            }
-            if (i == input1.Length)
-            {
-                return true;
-            }
-            return false;
-        }
-
         public static byte[] CombineHashes(List<byte[]> input)
         {
             byte[] byteArr;
