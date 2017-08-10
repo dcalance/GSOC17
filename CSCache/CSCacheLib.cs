@@ -8,27 +8,25 @@ namespace CSCacheLib
 {
     public class CSCache
     {
-        static string compilatorName = null;
-        static string compilatorInfo = null;
-        static string outputExtension = null;
-        static string outputFile = null;
-        static bool isOutputSpecified = false;
+        string compilerName = null;
+        string compilerInfo = null;
+        string outputExtension = null;
+        string outputFile = null;
+        bool isOutputSpecified = false;
 
-        static List<string> compilatorArgs = new List<string>();
-        static List<string> inputFiles = new List<string>();
-        static List<string> resourceFiles = new List<string>();
-        static Config configuration = new Config();
+        List<string> compilerArgs = new List<string>();
+        List<string> inputFiles = new List<string>();
+        List<string> resourceFiles = new List<string>();
+        Config configuration = new Config();
 
-        public static void CSCache_main(string[] args)
+        public void CSCache_main(string[] args)
         {
-            //string inputCompilator = null;
-            //bool recievedComp = false;
             int error = -1;
             bool showHelp = false;
-            //Console.WriteLine(configuration.cacheLocation);
+            bool doClearCache = false;
 
             var options = new OptionSet {
-                { "c|clear=", "the name of someone to greet.", n => { if (n == "all") LibArgs.ClearCache(configuration.cacheLocation); } },
+                { "c|clear=", "the name of someone to greet.", n => { if (n == "all") doClearCache = true; } },
                 { "v|version", "show the current version of the tool.", v => { } },
                 { "h|help", "show help message and exit.", h => showHelp = true },
             };
@@ -52,26 +50,12 @@ namespace CSCacheLib
                 LibArgs.ShowHelp(options);
                 return;
             }
-            //foreach (var item in args)
-            //{
-            //    switch(item)
-            //    {
-            //        case "-args":
-            //            // we will add arguments to cscache here later
-            //            break;
-            //        default:
-            //            if (item[0] != '-' && !recievedComp)
-            //            {
-            //                inputCompilator = item;
-            //                recievedComp = true;
-            //            }
-            //            else
-            //            {
-            //                //invalid arguments
-            //            }
-            //            break;
-            //    }
-            //}
+            if (doClearCache)
+            {
+                LibArgs.ClearCache(configuration.cacheLocation);
+                return;
+            }
+
             if (extra.Count == 1)
             {
                 ProcessInputCompiler(extra[0]);
@@ -83,7 +67,7 @@ namespace CSCacheLib
 
             foreach (var item in configuration.versionArg)
             {
-                compilatorInfo = ConsoleTools.Execute(compilatorName + " " + item, out error);
+                compilerInfo = ConsoleTools.Execute(compilerName + " " + item, out error);
                 if (error == 0)
                 {
                     break;
@@ -110,7 +94,7 @@ namespace CSCacheLib
             
         }
 
-        static void CompareCache(byte[] combinedCache)
+        void CompareCache(byte[] combinedCache)
         {
             string filename = BitConverter.ToString(combinedCache).Replace("-", string.Empty);
             string path = configuration.cacheLocation;
@@ -132,19 +116,26 @@ namespace CSCacheLib
             }
         }
 
-        static void GenerateCache(string path, string filename)
+        void GenerateCache(string path, string filename)
         {
             StringBuilder sb = new StringBuilder();
-            sb.Append(compilatorName + " ");
+            sb.Append(compilerName + " ");
             foreach (var item in inputFiles)
             {
-                sb.Append($"'{item}' ");
+                if (ConsoleTools.IsUnix)
+                {
+                    sb.Append($"'{item}' ");
+                }
+                else
+                {
+                    sb.Append($"{item} ");
+                }
             }
             foreach (var item in resourceFiles)
             {
                 sb.Append($"{configuration.resourcesArg}'{item}' ");
             }
-            foreach (var item in compilatorArgs)
+            foreach (var item in compilerArgs)
             {
                 sb.Append(item + " ");
             }
@@ -169,12 +160,12 @@ namespace CSCacheLib
             }
         }
 
-        static byte[] GenerateInputCache()
+        byte[] GenerateInputCache()
         {
             StringBuilder inputConcat = new StringBuilder();
 
-            inputConcat.Append(compilatorInfo);
-            foreach (var item in compilatorArgs)
+            inputConcat.Append(compilerInfo);
+            foreach (var item in compilerArgs)
             {
                 inputConcat.Append(item);
             }
@@ -191,7 +182,7 @@ namespace CSCacheLib
             return MD5Tools.MakeMD5String(inputConcat.ToString());
         }
 
-        static bool ContainsStringFromStart(string input, out int argType, params string[] checkStr) //argType = 0 for arguments of type -arg:file , argType = 1 for arguments of type -arg file
+        bool ContainsStringFromStart(string input, out int argType, params string[] checkStr) //argType = 0 for arguments of type -arg:file , argType = 1 for arguments of type -arg file
         {
             argType = -1;
             foreach (var item in checkStr)
@@ -212,7 +203,7 @@ namespace CSCacheLib
             return false;
         }
 
-        static string SplitArg(string input, int argType, string nextElement)
+        string SplitArg(string input, int argType, string nextElement)
         {
             if (argType == 0)
             {
@@ -225,13 +216,13 @@ namespace CSCacheLib
             }
         }
 
-        static void ProcessInputCompiler(string input)
+        void ProcessInputCompiler(string input)
         {
             string[] compParams = ParseArguments(input);
 
             if (compParams.Length > 1)
             {
-                compilatorName = compParams[0];
+                compilerName = compParams[0];
                 for (int i = 1; i < compParams.Length; i++)
                 {
                     if (compParams[i][0] != '-')
@@ -272,7 +263,7 @@ namespace CSCacheLib
                                 default:
                                     break;
                             }
-                            compilatorArgs.Add(compParams[i]);
+                            compilerArgs.Add(compParams[i]);
                         }
                         else
                         if (ContainsStringFromStart(compParams[i], out argType, configuration.recurseArg))
@@ -286,7 +277,7 @@ namespace CSCacheLib
                         }
                         else
                         {
-                            compilatorArgs.Add(compParams[i]);
+                            compilerArgs.Add(compParams[i]);
                         }
                     }
                 }
@@ -305,7 +296,7 @@ namespace CSCacheLib
                         outputFile = outPathFile + outputExtension;
                     }
                 }
-                compilatorArgs.Sort();
+                compilerArgs.Sort();
             }
             else
             {
@@ -313,7 +304,7 @@ namespace CSCacheLib
             }
         }
 
-        static string[] ParseArguments(string commandLine)
+        string[] ParseArguments(string commandLine)
         {
             char[] parmChars = commandLine.ToCharArray();
             bool inQuote = false;
