@@ -1,13 +1,14 @@
 using System;
-using static CSCacheLib.CSCache;
+using CSCacheLib;
 
-namespace CSCache
+namespace CSCacheEntry
 {
-	class CSCache
+	class CSCacheEntry
 	{
 		static void Main(string[] args)
 		{
-            CSCache_main(args);
+            CSCache a = new CSCache();
+			a.CSCache_main(args);
         }
 	}
 }
