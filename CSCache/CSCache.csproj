@@ -52,6 +52,7 @@
   <ItemGroup>
     <Compile Include="Config.cs" />
     <Compile Include="ConsoleTools.cs" />
+    <Compile Include="CSCache.cs" />
     <Compile Include="CSCacheLib.cs" />
     <Compile Include="FilesTools.cs" />
     <Compile Include="LibArgs.cs" />
