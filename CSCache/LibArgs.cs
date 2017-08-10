@@ -17,7 +17,7 @@ namespace CSCacheLib
             Console.WriteLine("Options:");
             p.WriteOptionDescriptions(Console.Out);
         }
-        public static void ClearCache(string path) //clearing older cache based on input nr, 0 for all
+        public static void ClearCache(string path)
         {
             DirectoryInfo info = new DirectoryInfo(path);
             FileInfo[] files = info.GetFiles().Where(x => x.Extension == ".cache").OrderByDescending(p => p.CreationTime).ToArray();
@@ -26,6 +26,7 @@ namespace CSCacheLib
             {
                 files[i].Delete();
             }
+            Console.WriteLine("Cache cleared successfully.");
         }
     }
 }
