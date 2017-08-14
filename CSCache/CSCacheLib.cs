@@ -9,6 +9,7 @@ namespace CSCacheLib
 {
     public class CSCache
     {
+
         string compilerName = null;
         string compilerInfo = null;
         string outputExtension = null;
@@ -22,7 +23,7 @@ namespace CSCacheLib
         Config configuration = new Config();
 
         public CSCache(string[] args)
-        {
+		{
             int error = -1;
             bool showHelp = false;
             bool doClearCache = false;
