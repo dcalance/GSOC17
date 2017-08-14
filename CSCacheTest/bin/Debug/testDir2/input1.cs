@@ -1,7 +1,10 @@
-public class Hello
+namespace Library
 {
-public static void Main()
+public class Lib
 {
-System.Console.WriteLine("Hello, World!");
+public static void func1(string input)
+{
+System.Console.WriteLine(input);
+}
 }
 }
