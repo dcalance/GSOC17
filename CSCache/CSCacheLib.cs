@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using Mono.Options;
+using System.Linq;
 
 namespace CSCacheLib
 {
@@ -15,11 +16,12 @@ namespace CSCacheLib
         bool isOutputSpecified = false;
 
         List<string> compilerArgs = new List<string>();
+        List<string> ignoredArgs = new List<string>();
         List<string> inputFiles = new List<string>();
         List<string> resourceFiles = new List<string>();
         Config configuration = new Config();
 
-        public void CSCache_main(string[] args)
+        public CSCache(string[] args)
         {
             int error = -1;
             bool showHelp = false;
@@ -122,18 +124,11 @@ namespace CSCacheLib
             sb.Append(compilerName + " ");
             foreach (var item in inputFiles)
             {
-                if (ConsoleTools.IsUnix)
-                {
-                    sb.Append($"'{item}' ");
-                }
-                else
-                {
-                    sb.Append($"{item} ");
-                }
+                sb.Append($"\"{item.Replace("\\", "\\\\")}\" ");
             }
             foreach (var item in resourceFiles)
             {
-                sb.Append($"{configuration.resourcesArg}'{item}' ");
+                sb.Append($"{configuration.resourcesArg[0]}\"{item.Replace("\\", "\\\\")}\" ");
             }
             foreach (var item in compilerArgs)
             {
@@ -146,12 +141,26 @@ namespace CSCacheLib
                 {
                     sb.Append(" ");
                 }
-                sb.Append($"'{outputFile}'");
+                sb.Append($"\"{outputFile}\" ");
             }
 
             int error;
             string executeMessage = ConsoleTools.Execute(sb.ToString(), out error);
-            Console.WriteLine(executeMessage);
+
+            if (ignoredArgs.Count > 0)
+            {
+                foreach (var item in ignoredArgs)
+                {
+                    sb.Append($"{item} ");
+                }
+
+                string executeMessageWithIgnoredArgs = ConsoleTools.Execute(sb.ToString(), out error);
+                Console.WriteLine(executeMessageWithIgnoredArgs);
+            }
+            else
+            {
+                Console.WriteLine(executeMessage);
+            }
 
             if (error == 0)
             {
@@ -274,6 +283,11 @@ namespace CSCacheLib
                             {
                                 inputFiles.Add(item);
                             }
+                        }
+                        else
+                        if (configuration.ignoredArg.Contains(compParams[i]))
+                        {
+                            ignoredArgs.Add(compParams[i]);
                         }
                         else
                         {
