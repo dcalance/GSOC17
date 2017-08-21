@@ -7,7 +7,7 @@ namespace CSCacheLib
     public class FilesTools
     {
         
-        public static void GenerateFullPath(ref List<string> inputF, ref List<string> resourceF)
+        public static void GenerateFullPath(ref List<string> inputF, ref List<string> resourceF, ref List<string> moduleF)
         {
             for (int i = 0; i < inputF.Count; i++)
             {
@@ -17,7 +17,7 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    ConsoleTools.Error("Input " + inputF[i] + " not found.");
+                    ConsoleTools.Error($"Input file not found: {inputF[i]}", 1);
                 }
             }
             for (int i = 0; i < resourceF.Count; i++)
@@ -26,13 +26,18 @@ namespace CSCacheLib
                 {
                     resourceF[i] = Path.GetFullPath(resourceF[i]);
                 }
-                else
+            }
+            for (int i = 0; i < moduleF.Count; i++)
+            {
+                if (File.Exists(moduleF[i]))
                 {
-                    ConsoleTools.Error("Resource " + resourceF[i] + " not found.");
+                    moduleF[i] = Path.GetFullPath(moduleF[i]);
                 }
             }
+
             inputF.Sort();
             resourceF.Sort();
+            moduleF.Sort();
         }
 
         public static string[] GetRecurseFiles(string pattern)
