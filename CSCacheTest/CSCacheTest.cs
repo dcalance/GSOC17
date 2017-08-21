@@ -20,7 +20,6 @@ namespace CSCacheTest
             string expectedCompilerInfo = "Mono C# compiler version 5.0.1.0";
             string expectedOutputExtension = ".dll";
             string expectedOutputFile = Path.GetFullPath("testDir2\\input1.dll");
-            bool expectedIsOutputSpecified = false;
 
             List<string> expectedCompilerArgs = new List<string> { "-t:library" };
             List<string> expectedInputFiles = new List<string> { Path.GetFullPath("testDir2\\input1.cs") };
@@ -50,31 +49,30 @@ namespace CSCacheTest
             string compilerInfo = (string)obj.GetFieldOrProperty("compilerInfo");
             string outputExtension = (string)obj.GetFieldOrProperty("outputExtension");
             string outputFile = (string)obj.GetFieldOrProperty("outputFile");
-            bool isOutputSpecified = (bool)obj.GetFieldOrProperty("isOutputSpecified");
 
             List<string> compilerArgs = (List<string>)obj.GetFieldOrProperty("compilerArgs");
             List<string> inputFiles = (List<string>)obj.GetFieldOrProperty("inputFiles");
-            List<string> resourceFiles = (List<string>)obj.GetFieldOrProperty("resourceFiles");
+            List<string> referenceFiles = (List<string>)obj.GetFieldOrProperty("referenceFiles");
 
             Assert.AreEqual(expectedCompilerName, compilerName);
             Assert.AreEqual(expectedCompilerInfo, compilerInfo);
             Assert.AreEqual(expectedOutputExtension, outputExtension);
             Assert.AreEqual(expectedOutputFile, outputFile);
-            Assert.AreEqual(expectedIsOutputSpecified, isOutputSpecified);
             Assert.AreEqual(expectedCacheCount, Directory.GetFiles(configuration.cacheLocation, "*", SearchOption.TopDirectoryOnly).Length);
             Assert.IsTrue(File.Exists("testDir2\\input1.dll"));
+            Config cfg = new Config();
+            Console.WriteLine(cfg.targetArg); 
 
             CollectionAssert.AreEqual(expectedCompilerArgs, compilerArgs);
             CollectionAssert.AreEqual(expectedInputFiles, inputFiles);
-            CollectionAssert.AreEqual(expectedResourceFiles, resourceFiles);
+            CollectionAssert.AreEqual(expectedResourceFiles, referenceFiles);
 
             expectedOutputExtension = null;
             expectedOutputFile = "testDir2\\hello.exe";
-            expectedIsOutputSpecified = true;
 
             expectedCacheCount += 2;
 
-            expectedCompilerArgs = new List<string>();
+            expectedCompilerArgs = new List<string> { "-out:testDir2\\hello.exe" };
             expectedResourceFiles = new List<string> { Path.GetFullPath("testDir2\\input1.dll") };
             expectedInputFiles =  new List<string> { Path.GetFullPath("testDir2\\input2.cs") };
 
@@ -103,23 +101,21 @@ namespace CSCacheTest
             compilerInfo = (string)obj.GetFieldOrProperty("compilerInfo");
             outputExtension = (string)obj.GetFieldOrProperty("outputExtension");
             outputFile = (string)obj.GetFieldOrProperty("outputFile");
-            isOutputSpecified = (bool)obj.GetFieldOrProperty("isOutputSpecified");
 
             compilerArgs = (List<string>)obj.GetFieldOrProperty("compilerArgs");
             inputFiles = (List<string>)obj.GetFieldOrProperty("inputFiles");
-            resourceFiles = (List<string>)obj.GetFieldOrProperty("resourceFiles");
+            referenceFiles = (List<string>)obj.GetFieldOrProperty("referenceFiles");
 
             Assert.AreEqual(expectedCompilerName, compilerName);
             Assert.AreEqual(expectedCompilerInfo, compilerInfo);
             Assert.AreEqual(expectedOutputExtension, outputExtension);
             Assert.AreEqual(expectedOutputFile, outputFile);
-            Assert.AreEqual(expectedIsOutputSpecified, isOutputSpecified);
             Assert.AreEqual(expectedCacheCount, Directory.GetFiles(configuration.cacheLocation, "*", SearchOption.TopDirectoryOnly).Length);
             Assert.IsTrue(File.Exists("testDir2\\hello.exe"));
 
             CollectionAssert.AreEqual(expectedCompilerArgs, compilerArgs);
             CollectionAssert.AreEqual(expectedInputFiles, inputFiles);
-            CollectionAssert.AreEqual(expectedResourceFiles, resourceFiles);
+            CollectionAssert.AreEqual(expectedResourceFiles, referenceFiles);
 
             Directory.Delete("testDir2", true);
         }
@@ -134,7 +130,6 @@ namespace CSCacheTest
             string expectedCompilerInfo = "Mono C# compiler version 5.0.1.0";
             string expectedOutputExtension = null;
             string expectedOutputFile = Path.GetFullPath("testDir3\\input1.exe");
-            bool expectedIsOutputSpecified = false;
 
             List<string> expectedCompilerArgs = new List<string>();
             List<string> expectedInputFiles = new List<string> { Path.GetFullPath("testDir3\\input1.cs") };
@@ -168,25 +163,21 @@ namespace CSCacheTest
             string compilerInfo = (string)obj.GetFieldOrProperty("compilerInfo");
             string outputExtension = (string)obj.GetFieldOrProperty("outputExtension");
             string outputFile = (string)obj.GetFieldOrProperty("outputFile");
-            bool isOutputSpecified = (bool)obj.GetFieldOrProperty("isOutputSpecified");
 
             List<string> compilerArgs = (List<string>)obj.GetFieldOrProperty("compilerArgs");
             List<string> inputFiles = (List<string>)obj.GetFieldOrProperty("inputFiles");
-            List<string> resourceFiles = (List<string>)obj.GetFieldOrProperty("resourceFiles");
-            List<string> ignoredArgs = (List<string>)obj.GetFieldOrProperty("ignoredArgs");
+            List<string> resourceFiles = (List<string>)obj.GetFieldOrProperty("referenceFiles");
 
             Assert.AreEqual(expectedCompilerName, compilerName);
             Assert.AreEqual(expectedCompilerInfo, compilerInfo);
             Assert.AreEqual(expectedOutputExtension, outputExtension);
             Assert.AreEqual(expectedOutputFile, outputFile);
-            Assert.AreEqual(expectedIsOutputSpecified, isOutputSpecified);
             Assert.AreEqual(expectedCacheCount, Directory.GetFiles(configuration.cacheLocation, "*", SearchOption.TopDirectoryOnly).Length);
             Assert.IsTrue(File.Exists("testDir3\\input1.exe"));
 
             CollectionAssert.AreEqual(expectedCompilerArgs, compilerArgs);
             CollectionAssert.AreEqual(expectedInputFiles, inputFiles);
             CollectionAssert.AreEqual(expectedResourceFiles, resourceFiles);
-            CollectionAssert.AreEqual(expectedIgnoredArgs, ignoredArgs);
 
             Directory.Delete("testDir3", true);
         }

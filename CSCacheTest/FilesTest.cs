@@ -14,6 +14,7 @@ namespace CSCacheTest
         {
             List<string> filesList = new List<string>();
             List<string> resourcesList = new List<string>();
+            List<string> moduleList = new List<string>();
 
             Directory.CreateDirectory("testDir");
 
@@ -30,7 +31,7 @@ namespace CSCacheTest
             List<string> testFilesList = new List<string>(filesList);
             List<string> testResourcesList = new List<string>(resourcesList);
 
-            FilesTools.GenerateFullPath(ref testFilesList, ref testResourcesList);
+            FilesTools.GenerateFullPath(ref testFilesList, ref testResourcesList, ref moduleList);
             for (int i = 0; i < testFilesList.Count; i++)
             {
                 Assert.AreEqual(Path.GetFullPath(filesList[i]), testFilesList[i]);

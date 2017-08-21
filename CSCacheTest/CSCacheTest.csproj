@@ -58,6 +58,7 @@
     <Compile Include="FilesTest.cs" />
     <Compile Include="MD5Test.cs" />
     <Compile Include="CSCacheTest.cs" />
+    <Compile Include="ParseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\CSCache\CSCache.csproj">

@@ -33,10 +33,11 @@ namespace CSCacheTest
                                    : Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + @"\.cscache\";
             string[] expectedIgnoredArg = { "--stacktrace", "--timestamp", "-v" };
             string[] expectedVersionArg = { "--version" };
-            string[] expectedResourcesArg = { "-r:" };
-            string[] expectedOutputArg = { "-out:" };
-            string[] expectedTargetArg = { "-t:" };
+            string[] expectedResourcesArg = { "-r:", "-reference:" };
+            string[] expectedOutputArg = { "-out:", "-o", "-output=" };
+            string[] expectedTargetArg = { "-t:", "-target:" };
             string[] expectedRecurseArg = { "-recurse:" };
+            string[] expectedAddModuleArg = { "--addmodule:" };
             string expectedDefaultExtension = ".exe";
 
             File.Delete(expectedCacheLocation + "config.xml");
@@ -45,7 +46,7 @@ namespace CSCacheTest
             Assert.AreEqual(expectedCacheLocation, conf.cacheLocation);
             CollectionAssert.AreEqual(expectedIgnoredArg, conf.ignoredArg);
             CollectionAssert.AreEqual(expectedVersionArg, conf.versionArg);
-            CollectionAssert.AreEqual(expectedResourcesArg, conf.resourcesArg);
+            CollectionAssert.AreEqual(expectedResourcesArg, conf.referenceArg);
             CollectionAssert.AreEqual(expectedOutputArg, conf.outputArg);
             CollectionAssert.AreEqual(expectedTargetArg, conf.targetArg);
             CollectionAssert.AreEqual(expectedRecurseArg, conf.recurseArg);
