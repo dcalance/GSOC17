@@ -57,6 +57,7 @@
     <Compile Include="FilesTools.cs" />
     <Compile Include="LibArgs.cs" />
     <Compile Include="MD5Tools.cs" />
+    <Compile Include="ParseTools.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSHARP.Targets" />
   <ProjectExtensions>

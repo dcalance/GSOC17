@@ -1,0 +1,1 @@
+-r:System.Configuration.dll -r:dependencies/Options.dll -t:library CSCacheLib.cs Config.cs FilesTools.cs MD5Tools.cs LibArgs.cs ParseTools.cs

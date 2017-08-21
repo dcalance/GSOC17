@@ -1,7 +1,8 @@
-public class Hello
+public class HelloW
 {
-   public static void Main()
+   public static void func()
    {
-      System.Console.WriteLine("Hello, World!");
+	   System.Console.WriteLine("Hello world");
    }
+   
 }
