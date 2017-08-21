@@ -28,6 +28,8 @@ namespace CSCacheLib
                     info.CreateNoWindow = true;
                     info.RedirectStandardInput = true;
                     info.UseShellExecute = false;
+                    info.RedirectStandardError = true;
+                    info.RedirectStandardOutput = true;
                     var dos2unix = Process.Start(info);
                     dos2unix.StandardInput.WriteLine("aaa");
                     dos2unix.StandardInput.WriteLine("\u0004");
@@ -56,24 +58,24 @@ namespace CSCacheLib
             else
             {
                 psi.FileName = "sh";
-                if (!IsUnix)
-                {
-                    StringBuilder b = new StringBuilder();
-                    int count = 0;
-                    for (int i = 0; i < cmdLine.Length; i++)
-                    {
-                        if (cmdLine[i] == '`')
-                        {
-                            if (count % 2 != 0)
-                            {
-                                b.Append("|dos2unix");
-                            }
-                            count++;
-                        }
-                        b.Append(cmdLine[i]);
-                    }
-                    cmdLine = b.ToString();
-                }
+                //if (!IsUnix)
+                //{
+                //    StringBuilder b = new StringBuilder();
+                //    int count = 0;
+                //    for (int i = 0; i < cmdLine.Length; i++)
+                //    {
+                //        if (cmdLine[i] == '`')
+                //        {
+                //            if (count % 2 != 0)
+                //            {
+                //                b.Append("|dos2unix");
+                //            }
+                //            count++;
+                //        }
+                //        b.Append(cmdLine[i]);
+                //    }
+                //    cmdLine = b.ToString();
+                //}
                 psi.Arguments = String.Format("-c \"{0}\"", cmdLine);
             }
 
@@ -93,14 +95,13 @@ namespace CSCacheLib
             }
 
             consoleOutput = consoleOutput.Where(s => !string.IsNullOrWhiteSpace(s)).Distinct().ToList();
-
             return string.Join("\n", consoleOutput);
         }
 
-        public static void Error(string msg, params object[] args)
+        public static void Error(string msg, int errCode)
         {
-            Console.WriteLine("ERROR: {0}", string.Format(msg, args));
-            Environment.Exit(1);
+            Console.WriteLine("ERROR: {0}", msg);
+            Environment.Exit(errCode);
         }
     }
 }
