@@ -6,7 +6,7 @@ using System.IO;
 
 namespace CSCacheLib
 {
-    class ParseTools
+    public class ParseTools
     {
         public static string[] ParseArguments(string commandLine)
         {
@@ -38,26 +38,28 @@ namespace CSCacheLib
         }
         public static string generateOption(string[] argArr)
         {
+            string[] temp = new string[argArr.Length];
+            Array.Copy(argArr, temp, argArr.Length);
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < argArr.Length; i++)
+            for (int i = 0; i < temp.Length; i++)
             {
                 for (int counter = 0; counter < 2; counter++)
                 {
-                    if (argArr[i][0] == '-' || argArr[i][0] == '/')
+                    if (temp[i][0] == '-' || temp[i][0] == '/')
                     {
-                        argArr[i] = argArr[i].Substring(1);
+                        temp[i] = temp[i].Substring(1);
                     }
                 }
-                if (argArr[i][argArr[i].Length - 1] == ':' || argArr[i][argArr[i].Length - 1] == '=')
+                if (temp[i][temp[i].Length - 1] == ':' || temp[i][temp[i].Length - 1] == '=')
                 {
-                    sb.Append(argArr[i].Substring(0, argArr[i].Length - 1));
+                    sb.Append(temp[i].Substring(0, temp[i].Length - 1));
                 }
                 else
                 {
-                    sb.Append(argArr[i]);
+                    sb.Append(temp[i]);
                 }
 
-                if (i < argArr.Length - 1)
+                if (i < temp.Length - 1)
                 {
                     sb.Append("|");
                 }
