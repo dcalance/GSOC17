@@ -12,10 +12,11 @@ namespace CSCacheLib
         public string cacheLocation { get; private set; } = null;
         public string[] ignoredArg { get; private set; } = null;
         public string[] versionArg { get; private set; } = null;
-        public string[] resourcesArg { get; private set; } = null;
+        public string[] referenceArg { get; private set; } = null;
         public string[] outputArg { get; private set; } = null;
         public string[] targetArg { get; private set; } = null;
         public string[] recurseArg { get; private set; } = null;
+        public string[] moduleArg { get; private set; } = null;
         public string defaultExtension { get; private set; } = null;
 
         string path = (ConsoleTools.IsUnix) ? Environment.GetEnvironmentVariable("HOME") + @"/.cscache/"
@@ -30,9 +31,17 @@ namespace CSCacheLib
             }
             ProcessConfigFile(path + "config.xml");
 
-            if (cacheLocation == null || versionArg == null || resourcesArg == null || outputArg == null || defaultExtension == null)
+            if (cacheLocation == null || 
+                versionArg == null || 
+                referenceArg == null || 
+                outputArg == null || 
+                defaultExtension == null || 
+                moduleArg == null || 
+                ignoredArg == null || 
+                targetArg == null ||
+                recurseArg == null)
             {
-                ConsoleTools.Error("Error in file configuration.");
+                ConsoleTools.Error("Error in file configuration.", 3);
             }
         }
 
@@ -64,8 +73,8 @@ namespace CSCacheLib
                     case "VersionArgument":
                         versionArg = ProcessArray(item.Value);
                         break;
-                    case "ResourcesArgument":
-                        resourcesArg = ProcessArray(item.Value);
+                    case "ReferenceArgument":
+                        referenceArg = ProcessArray(item.Value);
                         break;
                     case "OutputArgument":
                         outputArg = ProcessArray(item.Value);
@@ -75,6 +84,9 @@ namespace CSCacheLib
                         break;
                     case "RecurseArgument":
                         recurseArg = ProcessArray(item.Value);
+                        break;
+                    case "AddModuleArgument":
+                        moduleArg = ProcessArray(item.Value);
                         break;
                     case "DefaultExtension":
                         defaultExtension = item.Value;
@@ -91,10 +103,11 @@ namespace CSCacheLib
             sb.AppendLine($"\t\t<add key=\"CacheLocation\" value=\"{path}\"/>");
             sb.AppendLine("\t\t<add key=\"IgnoredArguments\" value=\"--stacktrace,--timestamp,-v\"/>");
             sb.AppendLine("\t\t<add key=\"VersionArgument\" value=\"--version\"/>");
-            sb.AppendLine("\t\t<add key=\"ResourcesArgument\" value=\"-r:\"/>");
-            sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:\"/>");
-            sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:\"/>");
+            sb.AppendLine("\t\t<add key=\"ReferenceArgument\" value=\"-r:, -reference:\"/>");
+            sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:, -o, -output=\"/>");
+            sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:, -target:\"/>");
             sb.AppendLine("\t\t<add key=\"RecurseArgument\" value=\"-recurse:\"/>");
+            sb.AppendLine("\t\t<add key=\"AddModuleArgument\" value=\"--addmodule\"/>");
             sb.AppendLine("\t\t<add key=\"DefaultExtension\" value=\".exe\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
