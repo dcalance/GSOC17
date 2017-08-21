@@ -14,7 +14,7 @@ namespace Install
             }
         }
 
-        static string path = (IsUnix) ? @"/usr/local/bin/cscache"
+        static string path = (IsUnix) ? @"/usr/local/bin/cscache/"
                                    : Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles) + @"\CSCache\";
 
         static void Main(string[] args)
@@ -52,8 +52,11 @@ namespace Install
             else
                 newPathVar += ";";
             newPathVar += path;
-            var target = EnvironmentVariableTarget.Machine;
+			var target = EnvironmentVariableTarget.Machine;
             Environment.SetEnvironmentVariable("PATH", newPathVar, target);
+			if (IsUnix) {
+				System.Console.WriteLine ("If the path was not set use command \"export PATH=$PATH:" + path + "\"");
+			}
             Console.WriteLine("Installation successful.");
         }
     }
