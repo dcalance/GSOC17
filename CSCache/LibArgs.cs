@@ -28,5 +28,29 @@ namespace CSCacheLib
             }
             Console.WriteLine("Cache cleared successfully.");
         }
+        public static string GetTargetExtenstion(string input)
+        {
+            Config cfg = new Config();
+            string result = null;
+            switch (input)
+            {
+                case "exe":
+                    result = ".exe";
+                    break;
+                case "winexe":
+                    result = ".exe";
+                    break;
+                case "library":
+                    result = ".dll";
+                    break;
+                case "module":
+                    result = ".netmodule";
+                    break;
+                default:
+                    result = cfg.defaultExtension;
+                    break;
+            }
+            return result;
+        }
     }
 }
