@@ -41,7 +41,7 @@ namespace CSCacheLib
                 targetArg == null ||
                 recurseArg == null)
             {
-                ConsoleTools.Error("Error in file configuration.", 3);
+                ConsoleTools.Error("Error in file configuration.\nChange the configuration or delete the configuration and reload the program.", 3);
             }
         }
 
@@ -107,7 +107,7 @@ namespace CSCacheLib
             sb.AppendLine("\t\t<add key=\"OutputArgument\" value=\"-out:, -o, -output=\"/>");
             sb.AppendLine("\t\t<add key=\"TagetArgument\" value=\"-t:, -target:\"/>");
             sb.AppendLine("\t\t<add key=\"RecurseArgument\" value=\"-recurse:\"/>");
-            sb.AppendLine("\t\t<add key=\"AddModuleArgument\" value=\"--addmodule\"/>");
+            sb.AppendLine("\t\t<add key=\"AddModuleArgument\" value=\"--addmodule:\"/>");
             sb.AppendLine("\t\t<add key=\"DefaultExtension\" value=\".exe\"/>");
             sb.AppendLine("\t</appSettings>");
             sb.AppendLine("</configuration>");
