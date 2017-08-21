@@ -1,4 +1,4 @@
 #! /bin/bash
 
-eval "mcs -r:System.Configuration.dll -t:library Config.cs ConsoleTools.cs CSCacheLib.cs FilesTools.cs MD5Tools.cs -out:CSCacheLib.dll"
+eval "mcs -r:System.Configuration.dll -t:library Config.cs ConsoleTools.cs CSCacheLib.cs FilesTools.cs MD5Tools.cs ParseTools.cs LibArgs.cs -out:CSCacheLib.dll"
 eval "mcs CSCache.cs -r:CSCacheLib.dll"
