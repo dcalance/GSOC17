@@ -1,0 +1,12 @@
+#!/bin/bash
+args=""
+for i
+do
+	args="$args \"$i\""
+done
+script_name=$0
+script_full_path=$(dirname "$0")
+compiler="mono "
+file="/CSCache.exe"
+full_command=$compiler$script_full_path$file$args
+eval $full_command
