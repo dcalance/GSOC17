@@ -212,7 +212,7 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    ConsoleTools.Error("No input files detected.", 1);
+                    ConsoleTools.Error("No input files detected.", 4);
                 }
             }
             else

@@ -17,7 +17,7 @@ namespace CSCacheLib
                 }
                 else
                 {
-                    ConsoleTools.Error($"Input file not found: {inputF[i]}", 1);
+                    ConsoleTools.Error($"Input file not found: {inputF[i]}", 3);
                 }
             }
             for (int i = 0; i < resourceF.Count; i++)
