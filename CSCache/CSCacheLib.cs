@@ -9,6 +9,7 @@ namespace CSCacheLib
 {
     public class CSCache
     {
+        string[] inputArgs = null;
 
         string compilerName = null;
         string compilerInfo = null;
@@ -22,9 +23,8 @@ namespace CSCacheLib
         List<string> moduleFiles = new List<string>();
 
         Config configuration = new Config();
-
-        public CSCache(string[] args)
-		{
+        public void Cache()
+        {
             int error = -1;
             bool showHelp = false;
             bool doClearCache = false;
@@ -37,7 +37,7 @@ namespace CSCacheLib
             List<string> extra = new List<string>();
             try
             {
-                extra = options.Parse(args);
+                extra = options.Parse(inputArgs);
             }
             catch (OptionException e)
             {
@@ -72,7 +72,7 @@ namespace CSCacheLib
                     break;
                 }
             }
-            
+
 
             if (error == 0)
             {
@@ -89,10 +89,16 @@ namespace CSCacheLib
             }
             else
             {
-            	ConsoleTools.Error("Error getting the version of the compiler. Check the configuration file.", 2);
+                ConsoleTools.Error("Error getting the version of the compiler. Check the configuration file.", 2);
             }
-            
+
         }
+
+        public CSCache(string[] args)
+		{
+            inputArgs = args;
+        }
+
         void CompareCache(byte[] combinedCache)
         {
             string filename = BitConverter.ToString(combinedCache).Replace("-", string.Empty);
