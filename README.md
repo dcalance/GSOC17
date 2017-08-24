@@ -142,3 +142,12 @@ Contains the class ParseTools with methods for parsing:
 - `static string[] ParseComaSemicolon(string input)` - Parses arguments that are delimited by coma or/and semicolon.
     - **string input** - string that is delimited with comas and/or semicolons.
     - **return** - array of strings with parsed elements.
+	
+# Error Codes
+The list of error codes returned by the tool:
+- Invalid compiler arguments - (code 1).
+- Error getting the version of the compiler - (code 2).
+- No input files detected after parsing - (code 4).
+- Input file not found - (code 3).
+- Compilation error - (same error code as compiler error code).
+- No Error - (code 0).
