@@ -1,5 +1,6 @@
 #! /bin/bash
 
+eval "mcs dependencies/Options.cs -t:library -out:Options.dll"
 eval "mcs -r:System.Configuration.dll -r:Options.dll -t:library Config.cs ConsoleTools.cs CSCacheLib.cs FilesTools.cs MD5Tools.cs LibArgs.cs ParseTools.cs -out:CSCacheLib.dll"
 eval "mcs CSCache.cs -r:CSCacheLib.dll"
 eval "read"
