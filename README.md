@@ -53,12 +53,6 @@ This tool is not as powerful as ccache however it is more flexible. The list of 
 - changing specific arguments that are passed to compiler.
 - ignoring of specific arguments passed to compiler.
 
-# Dependencies
-The list of dependencies is the following:
-- System.Configuration.dll.
-- Mono.Options. (in this project is located in dependencies/Options.cs)
-- Mono C# compiler. (mcs)
-
 #### Configuration file
 
 Configuration file is a feature that makes this tool more flexible and allows to use multiple compilers to cache the output.The configuration filename is **config.xml**.  The configuration file is located in:
@@ -81,6 +75,12 @@ The configuration file can be modified or removed. In case when it is removed th
 #### Clearing of cache
 
 `--clear=all` The argument is passed to the tool. The argument clears all files that have extension .cache from the location of the cache specified in configuration file. Once the argument is passed nothing else is executed.
+
+# Dependencies
+The list of dependencies is the following:
+- System.Configuration.dll.
+- Mono.Options. (in this project is located in dependencies/Options.cs)
+- Mono C# compiler. (mcs)
 
 # Nuget package
 The nuget package is located at: https://www.nuget.org/packages/CSCache/ . The nuget package just adds the library to the reference.
