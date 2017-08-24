@@ -8,6 +8,7 @@ namespace CSCacheEntry
 		static void Main(string[] args)
 		{
             CSCache a = new CSCache(args);
+            a.Cache();
         }
 	}
 }
